@@ -72,7 +72,7 @@ export default function CheckoutPage() {
 
     const res = await createOrder(orderData);
     if (res.success) {
-      setOrderId(res.orderId);
+      setOrderId(res.orderId ?? null);
       clearCart();
       setStatus("success");
     } else {
