@@ -139,7 +139,7 @@ function TestimonialCard({
           </svg>
         ))}
       </div>
-      <p className="text-slate-700 text-sm leading-relaxed flex-1">"{quote}"</p>
+      <p className="text-slate-700 text-sm leading-relaxed flex-1">{quote}</p>
       <div className="flex items-center gap-3 pt-2 border-t border-slate-100">
         <div className="w-9 h-9 rounded-full bg-cobalt-100 flex items-center justify-center text-cobalt-700 font-bold text-sm">
           {name[0]}

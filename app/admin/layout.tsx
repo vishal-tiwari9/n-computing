@@ -1,13 +1,16 @@
 import { auth } from "@/../auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, LayoutDashboard, Package, Users } from "lucide-react";
+import { LayoutDashboard, Package, Users } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
+  // Typed user object to eliminate the explicit 'any' error
+  const user = session?.user as { role?: string } | undefined;
+
   // Strict check: must be authenticated AND have admin role
-  if (!session || (session.user as any)?.role !== "admin") {
+  if (!session || user?.role !== "admin") {
     redirect("/admin-login");
   }
 
@@ -50,28 +53,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Leads
           </Link>
         </nav>
-
-        {/* Footer */}
-        {/* <div className="p-4 border-t border-navy-800">
-          <div className="flex items-center gap-2 mb-3 px-2">
-            <div className="w-7 h-7 rounded-full bg-cobalt-600 flex items-center justify-center text-xs font-bold shrink-0">
-              A
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold truncate">{session.user?.name || "Admin"}</p>
-              <p className="text-navy-400 text-xs truncate">{session.user?.email}</p>
-            </div>
-          </div>
-          <form action="/api/auth/signout" method="POST">
-            <button
-              type="submit"
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm font-semibold text-navy-300 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
-            >
-              <LogOut size={15} />
-              Sign Out
-            </button>
-          </form>
-        </div> */}
       </aside>
 
       {/* Main content */}

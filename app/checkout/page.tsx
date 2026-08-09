@@ -6,12 +6,40 @@ import { Button } from "@/components/ui/Button";
 import { useState, useEffect } from "react";
 import { createOrder } from "../../app/actions";
 import Link from "next/link";
+import Image from "next/image";
 import { ShieldCheck, Lock, Package, Truck, CheckCircle2 } from "lucide-react";
 import Script from "next/script";
 
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id?: string;
+  razorpay_signature?: string;
+}
+
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description?: string;
+  order_id: string;
+  prefill?: {
+    name?: string;
+    email?: string;
+    contact?: string;
+  };
+  theme?: {
+    color?: string;
+  };
+  handler: (response: RazorpayResponse) => void;
+  modal?: {
+    ondismiss?: () => void;
+  };
+}
+
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: new (options: RazorpayOptions) => { open: () => void };
   }
 }
 
@@ -20,8 +48,6 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [status, setStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [formRef, setFormRef] = useState<HTMLFormElement | null>(null);
-  const [formData, setFormData] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setMounted(true);
@@ -108,7 +134,7 @@ export default function CheckoutPage() {
         order_id: razorpayOrderId,
         prefill: { name, email, contact: phone },
         theme: { color: "#1455CB" },
-        handler: async (response: any) => {
+        handler: async (response: RazorpayResponse) => {
           // Payment successful — create order in DB
           const orderData = {
             customerName: name,
@@ -246,7 +272,7 @@ export default function CheckoutPage() {
                     <span className="w-6 h-6 rounded-full bg-cobalt-100 text-cobalt-700 text-xs flex items-center justify-center font-bold">3</span>
                     Secure Payment
                   </h2>
-                  <p className="text-sm text-slate-500 ml-8">Powered by Razorpay. Clicking "Pay Now" will open a secure payment window where you can use cards, UPI, net banking, or wallets.</p>
+                  <p className="text-sm text-slate-500 ml-8">Powered by Razorpay. Clicking Pay Now will open a secure payment window where you can use cards, UPI, net banking, or wallets.</p>
                   <div className="mt-4 ml-8 flex flex-wrap gap-2">
                     {["Visa", "Mastercard", "UPI", "Net Banking", "Wallets"].map((m) => (
                       <span key={m} className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium">{m}</span>
@@ -321,7 +347,7 @@ export default function CheckoutPage() {
 
                 {/* Trust badges */}
                 <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-center gap-3">
-                  <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-5 opacity-40" />
+                  <Image src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" width={20} height={20} unoptimized className="h-5 w-auto opacity-40" />
                   <span className="text-xs text-slate-400">Secured by Razorpay</span>
                 </div>
               </div>

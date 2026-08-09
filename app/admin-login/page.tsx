@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 import { Suspense } from "react";
+import Link from "next/link";
 
 function LoginForm() {
   const router = useRouter();
@@ -139,9 +140,12 @@ function LoginForm() {
               <p className="text-xs text-slate-400">
                 🔒 Access restricted to authorized administrators only.
               </p>
-              <a href="/" className="text-xs text-cobalt-600 hover:underline mt-2 inline-block">
+              {/* <a href="/" className="text-xs text-cobalt-600 hover:underline mt-2 inline-block">
                 ← Back to NComputing website
-              </a>
+              </a> */}
+              <Link href="/" className="text-xs text-cobalt-600 hover:underline mt-2 inline-block">
+                ← Back to NComputing website
+              </Link>
             </div>
           </div>
         </div>

@@ -46,7 +46,7 @@ export function CartDrawer() {
               </div>
               <div>
                 <p className="text-slate-900 font-semibold text-lg">Your cart is empty</p>
-                <p className="text-slate-500 text-sm mt-1">Looks like you haven't added any products yet.</p>
+                <p className="text-slate-500 text-sm mt-1">Looks like you haven t added any products yet.</p>
               </div>
               <Button variant="outline" onClick={closeCart}>Continue Shopping</Button>
             </div>

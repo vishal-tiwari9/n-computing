@@ -30,18 +30,13 @@ export function Navbar() {
           <Link href="/products/rx300" className="text-sm font-semibold text-slate-600 hover:text-cobalt-600 transition-colors">
             Products
           </Link>
-          <a href="/#solutions" className="text-sm font-semibold text-slate-600 hover:text-cobalt-600 transition-colors">
-            Solutions
-          </a>
-          <a href="/#contact" className="text-sm font-semibold text-slate-600 hover:text-cobalt-600 transition-colors">
-            Contact
-          </a>
-          {session?.user && (
+         
+          {/* {session?.user && (
             <Link href="/admin" className="text-sm font-semibold text-slate-600 hover:text-cobalt-600 transition-colors flex items-center gap-1">
               <LayoutDashboard size={14} />
               Admin
             </Link>
-          )}
+          )} */}
         </div>
 
         {/* Actions */}
@@ -111,8 +106,7 @@ export function Navbar() {
         <div className="md:hidden border-t border-slate-100 bg-white shadow-lg">
           <div className="flex flex-col p-4 gap-1">
             <Link href="/products/rx300" className="text-sm font-semibold text-slate-700 px-3 py-2.5 rounded-lg hover:bg-slate-50" onClick={() => setMobileMenuOpen(false)}>Products</Link>
-            <a href="/#solutions" className="text-sm font-semibold text-slate-700 px-3 py-2.5 rounded-lg hover:bg-slate-50" onClick={() => setMobileMenuOpen(false)}>Solutions</a>
-            <a href="/#contact" className="text-sm font-semibold text-slate-700 px-3 py-2.5 rounded-lg hover:bg-slate-50" onClick={() => setMobileMenuOpen(false)}>Contact</a>
+  
             {session?.user && (
               <Link href="/admin" className="text-sm font-semibold text-slate-700 px-3 py-2.5 rounded-lg hover:bg-slate-50 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <LayoutDashboard size={14} /> Admin
