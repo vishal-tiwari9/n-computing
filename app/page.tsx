@@ -5,13 +5,14 @@ import Link from "next/link";
 import {
   ArrowRight, Zap, Shield, Server, TrendingDown,
   CheckCircle, AlertTriangle, DollarSign, Clock,
-  ChevronRight, Building2, Cpu, Wifi,
+  ChevronRight, Building2, Cpu, Wifi, LogIn,
 } from "lucide-react";
 import { DemoModal } from "@/components/marketing/DemoModal";
 import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/lib/cart-store";
 import { toCartItem, RX300 } from "@/lib/products";
 import { formatPrice } from "@/lib/utils";
+import { useSession, signIn } from "next-auth/react";
 
 // ─── Topology SVG ─────────────────────────────────────────────────────────────
 function TopologyDiagram() {
@@ -159,6 +160,7 @@ function TestimonialCard({
 export default function HomePage() {
   const [demoOpen, setDemoOpen] = useState(false);
   const { addItem, openCart } = useCartStore();
+  const { data: session } = useSession();
 
   const handleAddRX300 = () => {
     addItem(toCartItem(10));
@@ -204,11 +206,21 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
-              <Link href="/products/rx300">
-                <Button size="xl" rightIcon={<ArrowRight size={20} />}>
-                  Shop RX300 — {formatPrice(8999)}
+              {session ? (
+                <Link href="/products/rx300">
+                  <Button size="xl" rightIcon={<ArrowRight size={20} />}>
+                    Shop RX300 — {formatPrice(8999)}
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  size="xl"
+                  rightIcon={<LogIn size={20} />}
+                  onClick={() => signIn("google", { callbackUrl: "/products/rx300" })}
+                >
+                  Sign In to Shop
                 </Button>
-              </Link>
+              )}
               <Button
                 size="xl"
                 variant="outline"
@@ -381,7 +393,7 @@ export default function HomePage() {
                 NComputing RX300 Thin Client
               </h2>
               <p className="text-slate-400 leading-relaxed mb-6">
-                India's most deployed thin client for desktop virtualization.
+                India s most deployed thin client for desktop virtualization.
                 Works with vSpace Pro, RDP, Citrix ICA, and VMware Horizon — on
                 your existing server or cloud.
               </p>
@@ -406,7 +418,7 @@ export default function HomePage() {
               <div className="flex items-baseline gap-3 mb-6">
                 <span className="text-3xl font-black text-white">{formatPrice(8999)}</span>
                 <span className="text-slate-500 line-through text-lg">{formatPrice(11999)}</span>
-                <span className="text-teal-400 text-sm font-bold">25% off</span>
+                <span className="text-teal-400 text-sm font-bold">99.9% off</span>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">

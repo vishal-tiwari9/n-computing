@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { leads, orders, orderItems } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 export async function submitLead(formData: FormData) {
   try {
@@ -28,43 +29,43 @@ export async function submitLead(formData: FormData) {
   }
 }
 
-export async function createOrder(data: any) {
+export async function createOrder(data: {
+  customerName: string;
+  email: string;
+  phone?: string;
+  shippingAddress: string;
+  totalAmount: number;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  items: { productName: string; quantity: number; price: number }[];
+}) {
   try {
-    // Basic validation
     if (!data.customerName || !data.email || !data.shippingAddress || !data.items || data.items.length === 0) {
       return { success: false, error: "Invalid order data" };
     }
 
-    // In a real app, verify the prices of items here from DB to avoid client-side tampering
-
-    // Insert Order
     const [newOrder] = await db.insert(orders).values({
       customerName: data.customerName,
       email: data.email,
+      phone: data.phone,
       shippingAddress: data.shippingAddress,
       totalAmount: data.totalAmount.toString(),
+      razorpayOrderId: data.razorpayOrderId,
+      razorpayPaymentId: data.razorpayPaymentId,
       status: "Pending",
     }).returning({ id: orders.id });
 
-    // Insert Items
-    const itemsToInsert = data.items.map((item: any) => ({
+    const itemsToInsert = data.items.map((item) => ({
       orderId: newOrder.id,
-      productId: item.productId, // UUID mapping usually required, but for MVP assuming UUID matching or adjusting schema
+      productName: item.productName,
       quantity: item.quantity,
       price: item.price.toString(),
     }));
 
-    // Wait, the products table expects a valid UUID for productId.
-    // If the cart-store uses static string like 'prod_rx300', we might need to seed a static product or adjust schema.
-    // Assuming `prod_rx300` isn't a valid UUID, let's just ignore the foreign key constraint or seed a valid UUID.
-    
-    // Using a try catch block specifically for items incase productId FK fails.
-    try {
-       await db.insert(orderItems).values(itemsToInsert);
-    } catch(err) {
-       console.log("Error inserting order items", err);
-       // We should return error but for MVP we might allow it if we disable FK or use a valid UUID.
-    }
+    await db.insert(orderItems).values(itemsToInsert);
+
+    // Send confirmation email (non-blocking)
+    sendOrderConfirmationEmail(data.email, newOrder.id, data.totalAmount.toLocaleString("en-IN")).catch(console.error);
 
     return { success: true, orderId: newOrder.id };
   } catch (error) {

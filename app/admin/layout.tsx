@@ -1,38 +1,84 @@
 import { auth } from "@/../auth";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/Button";
+import Link from "next/link";
+import { LogOut, LayoutDashboard, Package, Users } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-sm max-w-sm w-full text-center border border-slate-200">
-          <div className="w-12 h-12 bg-cobalt-100 text-cobalt-600 rounded-full flex items-center justify-center mx-auto mb-4 font-black">NC</div>
-          <h1 className="text-xl font-bold text-slate-900 mb-2">Admin Access Required</h1>
-          <p className="text-slate-500 text-sm mb-6">Please sign in with your authorized Google account to view the dashboard.</p>
-          <form action="/api/auth/signin">
-             <Button type="submit" className="w-full">Sign In with Google</Button>
-          </form>
-        </div>
-      </div>
-    );
+  // Strict check: must be authenticated AND have admin role
+  if (!session || (session.user as any)?.role !== "admin") {
+    redirect("/admin-login");
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-navy-900 text-white p-4 flex justify-between items-center px-8">
-        <h1 className="font-bold tracking-tight">NComputing Admin</h1>
-        <div className="flex items-center gap-4 text-sm">
-          <span>{session.user?.email}</span>
-          <form action="/api/auth/signout">
-             <button type="submit" className="text-cobalt-300 hover:text-white transition-colors">Sign Out</button>
-          </form>
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Sidebar */}
+      <aside className="w-60 bg-navy-900 text-white flex flex-col shrink-0 min-h-screen">
+        {/* Logo */}
+        <div className="p-6 border-b border-navy-800">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-cobalt-600 flex items-center justify-center font-black text-sm">NC</div>
+            <div>
+              <p className="font-black text-sm tracking-tight">NComputing</p>
+              <p className="text-navy-400 text-[10px]">Admin Dashboard</p>
+            </div>
+          </Link>
         </div>
-      </div>
-      <div className="p-8">
-        {children}
+
+        {/* Nav */}
+        <nav className="flex-1 p-4 space-y-1">
+          <Link
+            href="/admin"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-white bg-cobalt-600/20 hover:bg-cobalt-600/30 transition-colors"
+          >
+            <LayoutDashboard size={16} />
+            Dashboard
+          </Link>
+          <Link
+            href="/admin"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-navy-300 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <Package size={16} />
+            Orders
+          </Link>
+          <Link
+            href="/admin"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-navy-300 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <Users size={16} />
+            Leads
+          </Link>
+        </nav>
+
+        {/* Footer */}
+        {/* <div className="p-4 border-t border-navy-800">
+          <div className="flex items-center gap-2 mb-3 px-2">
+            <div className="w-7 h-7 rounded-full bg-cobalt-600 flex items-center justify-center text-xs font-bold shrink-0">
+              A
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate">{session.user?.name || "Admin"}</p>
+              <p className="text-navy-400 text-xs truncate">{session.user?.email}</p>
+            </div>
+          </div>
+          <form action="/api/auth/signout" method="POST">
+            <button
+              type="submit"
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm font-semibold text-navy-300 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+            >
+              <LogOut size={15} />
+              Sign Out
+            </button>
+          </form>
+        </div> */}
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-8">
+          {children}
+        </div>
       </div>
     </div>
   );

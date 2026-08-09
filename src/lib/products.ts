@@ -3,7 +3,7 @@ import { type CartItem } from "./cart-store";
 export const RX300 = {
   id: "prod_rx300",
   name: "NComputing RX300 Thin Client",
-  price: 8999,
+  price: 1,
   description: "Enterprise thin client based on Raspberry Pi 3 for vSpace Pro.",
 };
 
